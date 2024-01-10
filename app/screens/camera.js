@@ -356,7 +356,7 @@ const CameraComponent = ({ onNavigate }) => {
                     >
                     <Image source={VoiceLogo} style={styles.homeImageLogo} />
                     <Text style={styles.footerButtonText}>{recording ? "Stop" : "Voice"}</Text>
-                    </TouchableOpacity>
+                </TouchableOpacity>
 
                 <TouchableOpacity 
                 style={styles.footerButton} 
@@ -371,7 +371,7 @@ const CameraComponent = ({ onNavigate }) => {
                     onPress={(pickImage)}
                 >
                 <Image source={GaleryLogo} style={styles.homeImageLogo} />
-                <Text style={styles.footerButtonText}>Galery</Text>
+                <Text style={styles.footerButtonText}>Gallery</Text>
                 </TouchableOpacity>
             </View>
 
