@@ -104,7 +104,8 @@ const CameraComponent = ({ onNavigate }) => {
           setRecording(recording);
           console.log('Recording started');
         } catch (err) {
-          console.error('Failed to start recording', err);
+            Speech.speak("Failed to start recording");
+            console.error('Failed to start recording', err);
         }
       }
     
@@ -142,6 +143,7 @@ const CameraComponent = ({ onNavigate }) => {
           const responseData = await response.json();
           voiceCmd(responseData.text);
         } else {
+            Speech.speak("Failed to upload audio");
           console.error('Failed to upload audio');
           console.log(response.json());
         }
@@ -248,6 +250,7 @@ const CameraComponent = ({ onNavigate }) => {
                         Speech.speak("Unable to detect text.");
                     }              
             } catch (error) {
+                Speech.speak("Failed to upload the image");
                 console.error('Error uploading image', error);
                 
             }   

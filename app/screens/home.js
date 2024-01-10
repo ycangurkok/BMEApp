@@ -71,6 +71,7 @@ const HomePage = ({ onNavigate }) => {
       setRecording(recording);
       console.log('Recording started');
     } catch (err) {
+      Speech.speak("Failed to start recording");
       console.error('Failed to start recording', err);
     }
   }
@@ -109,6 +110,7 @@ const HomePage = ({ onNavigate }) => {
       const responseData = await response.json();
       voiceCmd(responseData.text);
     } else {
+      Speech.speak("Failed to upload audio");
       console.error('Failed to upload audio');
       console.log(response.json());
     }

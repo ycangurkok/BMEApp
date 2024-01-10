@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BackgroundLogo from '../images/background.png';
 import * as Haptics from 'expo-haptics';
+import * as Speech from 'expo-speech';
 
 function SignIn({ onNavigate }) {
   const navigation = useNavigation();
@@ -35,10 +36,12 @@ function SignIn({ onNavigate }) {
     if(!emailRegex.test(email)) {
       e_error = true;
       setEmailError("Invalid email address!");
+      Speech.speak("Invalid email address");
     }
     if (password.length < 6) {
       p_error = true;
       setPasswordError('Password must be at least 6 characters');
+      Speech.speak("Password must be at least 6 characters");
     }
     if (p_error || e_error) {
       return;
@@ -67,6 +70,7 @@ function SignIn({ onNavigate }) {
       });
     }
     else{
+      Speech.speak("Unable to sign in");
       return;
     }
   };
