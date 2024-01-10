@@ -38,7 +38,7 @@ function SignIn({ onNavigate }) {
     }
     if (password.length < 6) {
       p_error = true;
-      setPasswordError('Password must be at least 6 characters and include at least one number');
+      setPasswordError('Password must be at least 6 characters');
     }
     if (p_error || e_error) {
       return;
@@ -137,6 +137,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     marginBottom: 25,
     alignSelf: 'center',
+    color: "white"
   },
   button: {
     backgroundColor: '#9C9A9A',
@@ -161,7 +162,9 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: 'red',
-    marginBottom: 10,
+    marginBottom: 15,
+    justifyContent: 'flex-start',
+    alignSelf: 'center',
   },
   signInLink: {
     justifyContent: 'center',
