@@ -56,6 +56,7 @@ const VideoComponent = ({ onNavigate }) => {
         if (cameraStatus.status === 'granted' && mediaLibraryStatus.status === 'granted' && micStatus.status === 'granted') {
             setCameraPermission(true);
         } else {
+            Speech.speak("Please allow camera and microphone permissions");
             setCameraPermission(false);
         }
 
@@ -170,15 +171,18 @@ const VideoComponent = ({ onNavigate }) => {
                         };
                         speak();              
                     } else {
+                        Speech.speak("Video upload failed");
                         console.error('Failed to upload video');
                         console.log(response);
                         console.error('Video upload failed. Status Code:', response.status);
                     }              
                 } catch (error) {
+                    Speech.speak("Video upload failed");
                     console.error('Error uploading video', error);
                 }
             }   
         } else {
+            Speech.speak("No video to save");
             console.warn('No video to save');
         }
     }

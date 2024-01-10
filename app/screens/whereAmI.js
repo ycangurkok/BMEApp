@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import MapView from 'react-native-maps';
 import * as Location from "expo-location";
 import * as Haptics from 'expo-haptics';
+import * as Speech from 'expo-speech';
 
 function WhereAmI({ onNavigate }) {
   const navigation = useNavigation();
@@ -55,6 +56,7 @@ function WhereAmI({ onNavigate }) {
     if (supported) {
       await Linking.openURL(url);
     } else {
+      Speech.speak("Failed to open maps");
       Alert.alert(`Don't know how to open this URL: ${url}`);
     }
   };
