@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
-import { View, Image, StyleSheet, Button, Text } from 'react-native';
+import { View, Image, StyleSheet, Button, Text, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import base64 from 'react-native-base64';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -23,7 +23,7 @@ function StreamScreen() {
   const startStream = async () => {
     try {
       // Send a GET request to the start-stream endpoint
-      await fetch('http://192.168.1.125:5001/start-stream', { method: 'GET' });
+      await fetch('http://172.21.207.145:5001/start-stream', { method: 'GET' });
       console.log('Stream start request sent');
     } catch (error) {
       console.error('Error sending start stream request:', error);
@@ -33,7 +33,7 @@ function StreamScreen() {
   const stopStream = async () => {
     try {
       // Send a GET request to the stop-stream endpoint
-      await fetch('http://192.168.1.125:5001/stop-stream', { method: 'GET' });
+      await fetch('http://172.21.207.145:5001/stop-stream', { method: 'GET' });
       console.log('Stream stop request sent');
     } catch (error) {
       console.error('Error sending stop stream request:', error);
@@ -42,7 +42,7 @@ function StreamScreen() {
   
   const connectWebSocket = async () => {
     if (!wsRef.current || wsRef.current.readyState === WebSocket.CLOSED) {
-      wsRef.current = new WebSocket('ws://192.168.1.125:5001/ws/client');
+      wsRef.current = new WebSocket('ws://172.21.207.145:5001/ws/client');
 
       wsRef.current.onopen = async () => {
         console.log('WebSocket Connected');
@@ -112,7 +112,7 @@ function StreamScreen() {
   
       console.log('Image sent successfully');
       let responseData = await response.json();
-      console.log(responseData)
+      console.log(responseData);
       lastSpoken = String(responseData);
       await AsyncStorage.setItem('lastSpoken', lastSpoken);
       const speak = () => {
@@ -191,10 +191,13 @@ function StreamScreen() {
         )}
       </View>
 
-      <View style={styles.buttonContainer}>
-        <Button title="Button 1" onPress={handleButtonPress1} />
-        <Button title="Button 2" onPress={handleButtonPress2} />
-        {/* Add more buttons as needed */}
+      <View style={styles.row}>
+        <TouchableOpacity onPress={() => handleButtonPress1} style={styles.button}>
+          <Text style={styles.buttonText}>Describe Image</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => handleButtonPress2} style={styles.button}>
+          <Text style={styles.buttonText}>Read Text</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -222,6 +225,30 @@ const styles = StyleSheet.create({
   },
   text: {
     color: '#FFFFFF' // Set text color to white
+  },
+  button: {
+    borderColor: 'white',
+    borderWidth: 1,
+    padding: 10,
+    width: 180,
+    height: 72,
+    borderRadius: 15,
+    marginBottom: 55,
+    justifyContent: 'center',
+    padding: 10,
+    width: 300,
+  },
+  row: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    width: '100%', // Tüm genişliği kaplaması için
+    marginBottom: 100,
+    alignItems: 'center',
+    paddingTop: 60,
+  },
+  buttonText: {
+    fontSize: 24,
+    color: 'white',
   }
 });
 
