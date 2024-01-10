@@ -152,13 +152,9 @@ const CameraComponent = ({ onNavigate }) => {
                         console.log('Image uploaded successfully');
                         let responseData = await response.json();
                         if (endpointName=='wordsImage') {
-                        
                             const keys = Object.keys(responseData);
                             console.log(keys)
-                            responseData = keys
-                 
-                            
-                            
+                            responseData = keys 
                         }            
                         console.log(responseData)
                         lastSpoken = String(responseData);
@@ -173,9 +169,7 @@ const CameraComponent = ({ onNavigate }) => {
                           
                         speak();              
                     } else {
-                        console.error('Failed to upload image');
-                        console.log(response);
-                        console.error('Image upload failed. Status Code:', response.status);
+                        Speech.speak("Unable to detect text.");
                     }              
             } catch (error) {
                 console.error('Error uploading image', error);
