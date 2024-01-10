@@ -19,12 +19,13 @@ import SaveLogo from '../images/save.png';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import GaleryLogo from '../images/galery.png';
-
-
+import VoiceLogo from "../images/microphone.png";
+import { Audio } from 'expo-av';
 
 const CameraComponent = ({ onNavigate }) => {
     const navigation = useNavigation();
     const route = useRoute();
+    const [recording, setRecording] = React.useState();
 
     const [cameraPermission, setCameraPermission] = useState(null);
     const [type, setType] = useState(Camera.Constants.Type.back);
@@ -34,7 +35,6 @@ const CameraComponent = ({ onNavigate }) => {
     const [image, setImage] = useState(null);
     let lastSpoken = "";
     const [headerTitle, setHeaderTitle] = useState('Default Camera');
-    const [modalVisible, setModalVisible] = useState(false);
 
     useLayoutEffect(() => {
       navigation.setOptions({
@@ -70,7 +70,83 @@ const CameraComponent = ({ onNavigate }) => {
         }
         console.log("New Header Title:", title); // Debug log
         setHeaderTitle(title);
-        }, [route.params?.endpointName]);
+    }, [route.params?.endpointName]);
+
+    function voiceCmd(text) {
+        text = text.replace(/\W/g, '');
+        text = text.toLowerCase();
+        console.log(text);
+    
+        if(text.includes("take") || text.includes("picture")) {
+          takePicture();
+        }
+        else if(text.includes("help")) {
+          Speech.speak("You can say: take picture");
+        }
+        else {
+          Speech.speak("Sorry, I didn't get that. To see available commands, please say help");
+        }
+      }
+
+    async function startRecording() {
+        try {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          console.log('Requesting permissions..');
+          await Audio.requestPermissionsAsync();
+          await Audio.setAudioModeAsync({
+            allowsRecordingIOS: true,
+            playsInSilentModeIOS: true,
+          });
+    
+          console.log('Starting recording..');
+          const { recording } = await Audio.Recording.createAsync( Audio.RecordingOptionsPresets.HIGH_QUALITY
+          );
+          setRecording(recording);
+          console.log('Recording started');
+        } catch (err) {
+          console.error('Failed to start recording', err);
+        }
+      }
+    
+      async function stopRecording() {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        console.log('Stopping recording..');
+        setRecording(undefined);
+        await recording.stopAndUnloadAsync();
+        await Audio.setAudioModeAsync(
+          {
+            allowsRecordingIOS: false,
+          }
+        );
+        const uri = recording.getURI();
+        console.log('Recording stopped and stored at', uri);
+        const fileName = uri.match(/[^\/]+$/)[0];
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", "Bearer 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");
+        myHeaders.append("Content-Type", "multipart/form-data");
+        const formData = new FormData();
+        formData.append("file", {
+          uri: uri,
+          type: 'audio/mp4',
+          name: fileName,
+        });
+        formData.append("model", "whisper-1");
+        const endPointAddr = "https://api.openai.com/v1/audio/transcriptions";
+        const response = await fetch(endPointAddr, {
+          method: 'POST',
+          headers: myHeaders,
+          body: formData,
+        });
+        if (response.ok) {
+          console.log('Audio uploaded successfully');
+          const responseData = await response.json();
+          voiceCmd(responseData.text);
+        } else {
+          console.error('Failed to upload audio');
+          console.log(response.json());
+        }
+        
+      }
 
     const openHome = () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -233,6 +309,7 @@ const CameraComponent = ({ onNavigate }) => {
                         <Image source={TurnCameraLogo} style={styles.homeImageLogo} />
                     </TouchableOpacity>
 
+
                     <TouchableOpacity 
                         style={styles.footerButton} 
                         onPress={takePicture}>
@@ -260,14 +337,6 @@ const CameraComponent = ({ onNavigate }) => {
            </View>
             
             <View style={styles.footer}>
-        
-                <TouchableOpacity 
-                    style={styles.footerButton} 
-                    onPress={(pickImage)}
-                >
-                <Image source={GaleryLogo} style={styles.homeImageLogo} />
-                <Text style={styles.footerButtonText}>Galery</Text>
-                </TouchableOpacity>
 
                 <TouchableOpacity 
                 
@@ -279,6 +348,14 @@ const CameraComponent = ({ onNavigate }) => {
                 </TouchableOpacity>
 
                 <TouchableOpacity 
+                    style={styles.footerButton} 
+                    onPress={recording ? stopRecording : startRecording}
+                    >
+                    <Image source={VoiceLogo} style={styles.homeImageLogo} />
+                    <Text style={styles.footerButtonText}>{recording ? "Stop" : "Voice"}</Text>
+                    </TouchableOpacity>
+
+                <TouchableOpacity 
                 style={styles.footerButton} 
                 onPress={replaySound}
                 >
@@ -287,11 +364,11 @@ const CameraComponent = ({ onNavigate }) => {
                 </TouchableOpacity>
 
                 <TouchableOpacity 
-                style={styles.footerButton} 
-                onPress={openSettings}
+                    style={styles.footerButton} 
+                    onPress={(pickImage)}
                 >
-                <Image source={SettingsLogo} style={styles.homeImageLogo} />
-                <Text style={styles.footerButtonText}>Settings</Text>
+                <Image source={GaleryLogo} style={styles.homeImageLogo} />
+                <Text style={styles.footerButtonText}>Galery</Text>
                 </TouchableOpacity>
             </View>
 
