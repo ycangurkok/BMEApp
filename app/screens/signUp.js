@@ -44,7 +44,7 @@ function SignUp({ onNavigate }) {
     }
     if (password.length < 6) {
       p_error = true;username
-      setPasswordError('Password must be at least 6 characters and include at least one number');
+      setPasswordError('Password must be at least 6 characters');
       return;
     }
     if (p_error || e_error) {
@@ -156,6 +156,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     marginBottom: 25,
     alignSelf: 'center',
+    color: "white"
   },
   button: {
     height: height * 0.07, // Ekran yüksekliğinin %7'si
@@ -185,7 +186,9 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: 'red',
-    marginBottom: 10,
+    marginBottom: 15,
+    justifyContent: 'flex-start',
+    alignSelf: 'center',
   },
   link: {
     justifyContent: 'flex-end',
