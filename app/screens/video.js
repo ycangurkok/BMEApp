@@ -103,7 +103,7 @@ const VideoComponent = ({ onNavigate }) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         setFlashMode(prevMode => 
             prevMode === Camera.Constants.FlashMode.off 
-            ? Camera.Constants.FlashMode.on 
+            ? Camera.Constants.FlashMode.torch
             : Camera.Constants.FlashMode.off
         );
       
@@ -256,11 +256,11 @@ const VideoComponent = ({ onNavigate }) => {
                             onPress={toggleFlash}
                         >
                         <Image                                 
-                            source={flashMode === Camera.Constants.FlashMode.on ? FlashOnLogo : FlashOffLogo} 
+                            source={flashMode === Camera.Constants.FlashMode.torch ? FlashOnLogo : FlashOffLogo} 
                             style={styles.homeImageLogo} 
                         />
                         <Text style={styles.flashText}>
-                            {flashMode === Camera.Constants.FlashMode.on ? "Flash Kapat" : "Flash Aç"}
+                            {flashMode === Camera.Constants.FlashMode.on ? "Disable Flashlight" : "Enable Flashlight"}
                         </Text>
                     </TouchableOpacity>
              
