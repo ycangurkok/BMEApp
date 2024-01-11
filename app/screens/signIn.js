@@ -36,12 +36,12 @@ function SignIn({ onNavigate }) {
     if(!emailRegex.test(email)) {
       e_error = true;
       setEmailError("Invalid email address!");
-      Speech.speak("Invalid email address");
+      Speech.speak("Invalid email address", {language: "en-US"});
     }
     if (password.length < 6) {
       p_error = true;
       setPasswordError('Password must be at least 6 characters');
-      Speech.speak("Password must be at least 6 characters");
+      Speech.speak("Password must be at least 6 characters", {language: "en-US"});
     }
     if (p_error || e_error) {
       return;
@@ -70,7 +70,7 @@ function SignIn({ onNavigate }) {
       });
     }
     else{
-      Speech.speak("Unable to sign in");
+      Speech.speak("Unable to sign in", {language: "en-US"});
       return;
     }
   };

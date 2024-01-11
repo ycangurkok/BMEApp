@@ -50,10 +50,10 @@ const HomePage = ({ onNavigate }) => {
       navigation.navigate('WhereAmI');
     }
     else if(text.includes("help")) {
-      Speech.speak("You can say: describe, count money, read text, and where am i");
+      Speech.speak("You can say: describe, count money, read text, and where am i", {language: "en-US"});
     }
     else {
-      Speech.speak("Sorry, I didn't get that. To see available commands, please say help");
+      Speech.speak("Sorry, I didn't get that. To see available commands, please say help", {language: "en-US"});
     }
   }
 
@@ -73,7 +73,7 @@ const HomePage = ({ onNavigate }) => {
       setRecording(recording);
       console.log('Recording started');
     } catch (err) {
-      Speech.speak("Failed to start recording");
+      Speech.speak("Failed to start recording", {language: "en-US"});
       console.error('Failed to start recording', err);
     }
   }
@@ -112,7 +112,7 @@ const HomePage = ({ onNavigate }) => {
       const responseData = await response.json();
       voiceCmd(responseData.text);
     } else {
-      Speech.speak("Failed to upload audio");
+      Speech.speak("Failed to upload audio", {language: "en-US"});
       console.error('Failed to upload audio');
       console.log(response.json());
     }
@@ -149,7 +149,7 @@ const HomePage = ({ onNavigate }) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     const lastSpoken = await AsyncStorage.getItem("lastSpoken");
     setSpeaking(true);
-    Speech.speak(lastSpoken, { onDone: () => setSpeaking(false) });
+    Speech.speak(lastSpoken, { onDone: () => setSpeaking(false), language: "en-US" });
   };
 
   const stopSpeech = async () => {

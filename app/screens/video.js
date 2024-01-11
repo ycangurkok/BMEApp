@@ -58,7 +58,7 @@ const VideoComponent = ({ onNavigate }) => {
         if (cameraStatus.status === 'granted' && mediaLibraryStatus.status === 'granted' && micStatus.status === 'granted') {
             setCameraPermission(true);
         } else {
-            Speech.speak("Please allow camera and microphone permissions");
+            Speech.speak("Please allow camera and microphone permissions", {language: "en-US"});
             setCameraPermission(false);
         }
 
@@ -75,10 +75,10 @@ const VideoComponent = ({ onNavigate }) => {
               toggleVideoRecording();
             }
             else if(text.includes("help")) {
-              Speech.speak("You can say: record video");
+              Speech.speak("You can say: record video", {language: "en-US"});
             }
             else {
-              Speech.speak("Sorry, I didn't get that. To see available commands, please say help");
+              Speech.speak("Sorry, I didn't get that. To see available commands, please say help", {language: "en-US"});
             }
           }
     
@@ -98,7 +98,7 @@ const VideoComponent = ({ onNavigate }) => {
               setRecording(recording);
               console.log('Recording started');
             } catch (err) {
-                Speech.speak("Failed to start recording");
+                Speech.speak("Failed to start recording", {language: "en-US"});
                 console.error('Failed to start recording', err);
             }
           }
@@ -137,7 +137,7 @@ const VideoComponent = ({ onNavigate }) => {
               const responseData = await response.json();
               voiceCmd(responseData.text);
             } else {
-                Speech.speak("Failed to upload audio");
+                Speech.speak("Failed to upload audio", {language: "en-US"});
               console.error('Failed to upload audio');
               console.log(response.json());
             }
@@ -153,7 +153,7 @@ const VideoComponent = ({ onNavigate }) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         const lastSpoken = await AsyncStorage.getItem("lastSpoken");
         setSpeaking(true);
-        Speech.speak(lastSpoken, { onDone: () => setSpeaking(false) });
+        Speech.speak(lastSpoken, { onDone: () => setSpeaking(false) , language: "en-US"});
     };
 
     const stopSpeech = async () => {
@@ -221,7 +221,7 @@ const VideoComponent = ({ onNavigate }) => {
             if(assetInfo && assetInfo.duration){
                 const durationInSeconds = assetInfo.duration;
                 if (durationInSeconds > 5){
-                    Speech.speak("Videos cannot be longer than 5 seconds");
+                    Speech.speak("Videos cannot be longer than 5 seconds", {language: "en-US"});
                     durationFlag = true;
                 }
             }
@@ -260,18 +260,18 @@ const VideoComponent = ({ onNavigate }) => {
                         };
                         speak();
                     } else {
-                        Speech.speak("Video upload failed");
+                        Speech.speak("Video upload failed", {language: "en-US"});
                         console.error('Failed to upload video');
                         console.log(response);
                         console.error('Video upload failed. Status Code:', response.status);
                     }              
                 } catch (error) {
-                    Speech.speak("Video upload failed");
+                    Speech.speak("Video upload failed", {language: "en-US"});
                     console.error('Error uploading video', error);
                 }
             }   
         } else {
-            Speech.speak("No video to save");
+            Speech.speak("No video to save", {language: "en-US"});
             console.warn('No video to save');
         }
     }
