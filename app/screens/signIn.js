@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Text, Button, StyleSheet, Dimensions, ImageBackground } from 'react-native';
+import { View, TextInput, Text, Button, StyleSheet, Dimensions, ImageBackground, KeyboardAvoidingView,Platform,Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BackgroundLogo from '../images/background.png';
@@ -76,42 +76,53 @@ function SignIn({ onNavigate }) {
   };
 
   return (
-    <View style={styles.container}>
+        <View style={styles.container}>
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={{ flex: 1 }}>
+            <KeyboardAvoidingView 
+              style={{ flex: 1 }}
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
+            >
 
-      <ImageBackground source={BackgroundLogo} style={styles.imageBackground} resizeMode="cover">
-        <Text style={styles.transparentText}>BeMyEyes</Text>
-      </ImageBackground>
+          <ImageBackground source={BackgroundLogo} style={styles.imageBackground} resizeMode="cover">
+            <Text style={styles.transparentText}>BeMyEyes</Text>
+          </ImageBackground>
 
-      <View style={styles.container}>
-        <TextInput
-          style={styles.googleButton}
-          onChangeText={handleEmailChange}
-          value={email}
-          placeholder="Enter your e-mail"
-          autoCapitalize="none"
-          placeholderTextColor="white"
-        />
-        {emailError && <Text style={styles.errorText}>{emailError}</Text>}
+          <View style={styles.container}>
+            <TextInput
+              style={styles.googleButton}
+              onChangeText={handleEmailChange}
+              value={email}
+              placeholder="Enter your e-mail"
+              autoCapitalize="none"
+              placeholderTextColor="white"
+            />
+            {emailError && <Text style={styles.errorText}>{emailError}</Text>}
 
-        <TextInput
-          style={styles.googleButton}
-          onChangeText={handlePasswordChange}
-          value={password}
-          placeholder="Enter your password"
-          placeholderTextColor="white"
-          autoCapitalize="none"
-          secureTextEntry
-        />
-        {passwordError && <Text style={styles.errorText}>{passwordError}</Text>}
+            <TextInput
+              style={styles.googleButton}
+              onChangeText={handlePasswordChange}
+              value={password}
+              placeholder="Enter your password"
+              placeholderTextColor="white"
+              autoCapitalize="none"
+              secureTextEntry
+            />
+            {passwordError && <Text style={styles.errorText}>{passwordError}</Text>}
 
 
-      
-      <Button title="Sign In" style={styles.signInLink} onPress={handleSignIn} />
-    </View>
-
-    <Button title="Don't have an account? Sign Up" style={styles.link} onPress={openSignUp} />
+          
+          <Button title="Sign In" style={styles.signInLink} onPress={handleSignIn} />
+        </View>
+        </KeyboardAvoidingView>
+      </View>
+    </TouchableWithoutFeedback>
+        <Button title="Don't have an account? Sign Up" style={styles.link} onPress={openSignUp} />
         
-    </View>
+        </View>
+
+        
   );
 }
 

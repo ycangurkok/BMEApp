@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Text, Button, StyleSheet, Dimensions, ImageBackground } from 'react-native';
+import { View, TextInput, Text, Button, StyleSheet, Dimensions, ImageBackground, KeyboardAvoidingView,Platform,Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BackgroundLogo from '../images/background.png';
@@ -85,52 +85,65 @@ function SignUp({ onNavigate }) {
   };
 
   return (
-    <View style={styles.container}>
+    
+        <View style={styles.container}>
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={{ flex: 1 }}>
+            <KeyboardAvoidingView 
+              style={{ flex: 1 }}
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
+            >
 
-      <ImageBackground source={BackgroundLogo} style={styles.imageBackground} resizeMode="cover">
-        <Text style={styles.transparentText}>BeMyEyes</Text>
-      </ImageBackground>
+              <ImageBackground source={BackgroundLogo} style={styles.imageBackground} resizeMode="cover">
+                <Text style={styles.transparentText}>BeMyEyes</Text>
+              </ImageBackground>
 
-      <View style={styles.container}>
-        <TextInput
-          style={styles.googleButton}
-          onChangeText={handleNameChange}
-          placeholder="Enter your user name"
-          value={name}
-          autoCapitalize="none"
-          placeholderTextColor="white"
-        />
+              <View style={styles.container}>
+                <TextInput
+                  style={styles.googleButton}
+                  onChangeText={handleNameChange}
+                  placeholder="Enter your user name"
+                  value={name}
+                  autoCapitalize="none"
+                  placeholderTextColor="white"
+                />
 
-        <TextInput
-          style={styles.googleButton}
-          onChangeText={handleEmailChange}
-          value={email}
-          keyboardType="email-address"
-          placeholder="Enter your email"
-          autoCapitalize="none"
-          placeholderTextColor="white"
-        />
-        {emailError && <Text style={styles.errorText}>{emailError}</Text>}
-        <TextInput
-          style={styles.googleButton}
-          onChangeText={handlePasswordChange}
-          value={password}
-          placeholder="Enter your password"
-          placeholderTextColor="white"
-          autoCapitalize="none"
-          secureTextEntry
-        />
-        {passwordError && <Text style={styles.errorText}>{passwordError}</Text>}
-
-
-      <Button title="Sign Up" style={styles.signUpLink} onPress={handleSignUp} />
-
-    </View>
-
-    <Button title="Already have an account? Sign In" style={styles.link} onPress={openSignIn} />
+                <TextInput
+                  style={styles.googleButton}
+                  onChangeText={handleEmailChange}
+                  value={email}
+                  keyboardType="email-address"
+                  placeholder="Enter your email"
+                  autoCapitalize="none"
+                  placeholderTextColor="white"
+                />
+                {emailError && <Text style={styles.errorText}>{emailError}</Text>}
+                <TextInput
+                  style={styles.googleButton}
+                  onChangeText={handlePasswordChange}
+                  value={password}
+                  placeholder="Enter your password"
+                  placeholderTextColor="white"
+                  autoCapitalize="none"
+                  secureTextEntry
+                />
+                {passwordError && <Text style={styles.errorText}>{passwordError}</Text>}
 
 
-    </View>
+              <Button title="Sign Up" style={styles.signUpLink} onPress={handleSignUp} />
+
+            </View>
+            </KeyboardAvoidingView>
+      </View>
+    </TouchableWithoutFeedback>
+          
+
+            <Button title="Already have an account? Sign In" style={styles.link} onPress={openSignIn} />
+
+
+        </View>
+        
   );
 }
 const { width, height } = Dimensions.get('window');
