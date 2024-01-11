@@ -293,13 +293,17 @@ const CameraComponent = ({ onNavigate }) => {
                     <TouchableOpacity 
                         style={styles.footerButton} 
                         onPress={() => setImage(null)}
+                        accessible={true}
+                        accessibilityLabel='Retake Picture'
                     >
                         <Image source={RetakeLogo} style={styles.takePicImageLogo} />     
                     </TouchableOpacity>
 
                     <TouchableOpacity 
-                        style={styles.footerButton} 
+                        style={styles.footerButton}
                         onPress={saveImage}
+                        accessible={true}
+                        accessibilityLabel='Save Picture'
                     >
                         <Image source={SaveLogo} style={styles.takePicImageLogo} />     
                     </TouchableOpacity>
@@ -314,6 +318,8 @@ const CameraComponent = ({ onNavigate }) => {
                                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                                 setType(type === CameraType.back ? CameraType.front : CameraType.back);
                             }}
+                            accessible={true}
+                            accessibilityLabel='Turn Camera'
                         >
                         <Image source={TurnCameraLogo} style={styles.homeImageLogo} />
                     </TouchableOpacity>
@@ -321,13 +327,19 @@ const CameraComponent = ({ onNavigate }) => {
 
                     <TouchableOpacity 
                         style={styles.footerButton} 
-                        onPress={takePicture}>
+                        onPress={takePicture}
+                        accessible={true}
+                        accessibilityLabel='Take Picture'
+                        >
+                          
                         <Image source={TakePic1} style={styles.takePicImageLogo} />     
                     </TouchableOpacity>
 
                     <TouchableOpacity 
                             style={styles.footerButton} 
                             onPress={toggleFlash}
+                            accessible={true}
+                            accessibilityLabel='Toggle Flash'
                         >
                         <Image                                 
                             source={flashMode === Camera.Constants.FlashMode.on ? FlashOnLogo : FlashOffLogo} 
