@@ -20,13 +20,14 @@ import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import GaleryLogo from '../images/galery.png';
 import VoiceLogo from "../images/microphone.png";
+import StopVoice from "../images/stop-speech.png";
 import { Audio } from 'expo-av';
 
 const CameraComponent = ({ onNavigate }) => {
     const navigation = useNavigation();
     const route = useRoute();
     const [recording, setRecording] = React.useState();
-
+    const [speaking, setSpeaking] = useState(false);
     const [cameraPermission, setCameraPermission] = useState(null);
     const [type, setType] = useState(Camera.Constants.Type.back);
     const [flashMode, setFlashMode] = useState(Camera.Constants.FlashMode.off);
@@ -158,7 +159,14 @@ const CameraComponent = ({ onNavigate }) => {
       const replaySound = async () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         const lastSpoken = await AsyncStorage.getItem("lastSpoken");
-        Speech.speak(lastSpoken);
+        setSpeaking(true);
+        Speech.speak(lastSpoken, { onDone: () => setSpeaking(false) });
+      };
+
+      const stopSpeech = async () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        Speech.stop();
+        setSpeaking(false);
       };
     
       const openSettings = () => {
@@ -238,16 +246,14 @@ const CameraComponent = ({ onNavigate }) => {
                         lastSpoken = String(responseData);
                         await AsyncStorage.setItem('lastSpoken', lastSpoken);
                         const speak = () => {
-                            const options = {
-                              language: "en-US",
-                                                          };
-                          
+                            const options = {language: "en-US", onDone: () => setSpeaking(false)};
+                            setSpeaking(true);
                             Speech.speak(lastSpoken, options);
                           };
                           
                         speak();              
                     } else {
-                        Speech.speak("Unable to detect text.");
+                        Speech.speak("Unable to upload the image");
                     }              
             } catch (error) {
                 Speech.speak("Failed to upload the image");
@@ -359,11 +365,11 @@ const CameraComponent = ({ onNavigate }) => {
                 </TouchableOpacity>
 
                 <TouchableOpacity 
-                style={styles.footerButton} 
-                onPress={replaySound}
-                >
-                <Image source={ReplayLogo} style={styles.homeImageLogo} />
-                <Text style={styles.footerButtonText}>Replay</Text>
+                    style={styles.footerButton} 
+                    onPress={speaking ? stopSpeech : replaySound}
+                    >
+                    <Image style={styles.homeImageLogo} source={speaking ? StopVoice : ReplayLogo} />
+                    <Text style={styles.footerButtonText}>{speaking ? "Stop" : "Replay"}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity 

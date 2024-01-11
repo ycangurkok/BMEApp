@@ -22,12 +22,13 @@ import * as ImagePicker from 'expo-image-picker';
 import GaleryLogo from '../images/galery.png';
 import { Video, ResizeMode, Audio } from 'expo-av';
 import VoiceLogo from "../images/microphone.png";
+import StopVoice from "../images/stop-speech.png";
 
 
 const VideoComponent = ({ onNavigate }) => {
     const navigation = useNavigation();
     const route = useRoute();
-
+    const [speaking, setSpeaking] = useState(false);
     const [cameraPermission, setCameraPermission] = useState(null);
     const [type, setType] = useState(Camera.Constants.Type.back);
     const [flashMode, setFlashMode] = useState(Camera.Constants.FlashMode.off);
@@ -151,8 +152,15 @@ const VideoComponent = ({ onNavigate }) => {
     const replaySound = async () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         const lastSpoken = await AsyncStorage.getItem("lastSpoken");
-        Speech.speak(lastSpoken);
+        setSpeaking(true);
+        Speech.speak(lastSpoken, { onDone: () => setSpeaking(false) });
     };
+
+    const stopSpeech = async () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        Speech.stop();
+        setSpeaking(false);
+      };
     
     const openSettings = () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -245,10 +253,12 @@ const VideoComponent = ({ onNavigate }) => {
                         const speak = () => {
                             const options = {
                                 language: "en-US",
+                                onDone: () => setSpeaking(false)
                             };
+                            setSpeaking(true);
                             Speech.speak(lastSpoken, options);
                         };
-                        speak();              
+                        speak();
                     } else {
                         Speech.speak("Video upload failed");
                         console.error('Failed to upload video');
@@ -375,10 +385,10 @@ const VideoComponent = ({ onNavigate }) => {
 
                 <TouchableOpacity 
                 style={styles.footerButton} 
-                onPress={replaySound}
+                onPress={speaking ? stopSpeech : replaySound}
                 >
-                <Image source={ReplayLogo} style={styles.homeImageLogo} />
-                <Text style={styles.footerButtonText}>Replay</Text>
+                <Image style={styles.homeImageLogo} source={speaking ? StopVoice : ReplayLogo} />
+                <Text style={styles.footerButtonText}>{speaking ? "Stop" : "Replay"}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity 
