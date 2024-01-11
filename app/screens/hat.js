@@ -26,7 +26,7 @@ function StreamScreen() {
       await fetch('http://172.21.207.145:5001/start-stream', { method: 'GET' });
       console.log('Stream start request sent');
     } catch (error) {
-      Speech.speak("Failed to start stream");
+      Speech.speak("Failed to start stream", {language: "en-US"});
       console.error('Error sending start stream request:', error);
     }
   };
@@ -37,7 +37,7 @@ function StreamScreen() {
       await fetch('http://172.21.207.145:5001/stop-stream', { method: 'GET' });
       console.log('Stream stop request sent');
     } catch (error) {
-      Speech.speak("Failed to stop stream");
+      Speech.speak("Failed to stop stream", {language: "en-US"});
       console.error('Error sending stop stream request:', error);
     }
   };
@@ -129,7 +129,7 @@ function StreamScreen() {
         
       speak();     
     } catch (error) {
-      Speech.speak("Failed to send image");
+      Speech.speak("Failed to send image", {language: "en-US"});
       console.error('Error sending image:', error);
     }
   };
@@ -182,7 +182,7 @@ function StreamScreen() {
         
       speak();     
     } catch (error) {
-      Speech.speak("Failed to send image");
+      Speech.speak("Failed to send image", {language: "en-US"});
       console.error('Error sending image:', error);
     }  };
 

@@ -56,7 +56,7 @@ function WhereAmI({ onNavigate }) {
     if (supported) {
       await Linking.openURL(url);
     } else {
-      Speech.speak("Failed to open maps");
+      Speech.speak("Failed to open maps", {language: "en-US"});
       Alert.alert(`Don't know how to open this URL: ${url}`);
     }
   };

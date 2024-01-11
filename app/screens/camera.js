@@ -82,10 +82,10 @@ const CameraComponent = ({ onNavigate }) => {
           takePicture();
         }
         else if(text.includes("help")) {
-          Speech.speak("You can say: take picture");
+          Speech.speak("You can say: take picture", {language: "en-US"});
         }
         else {
-          Speech.speak("Sorry, I didn't get that. To see available commands, please say help");
+          Speech.speak("Sorry, I didn't get that. To see available commands, please say help", {language: "en-US"});
         }
       }
 
@@ -105,7 +105,7 @@ const CameraComponent = ({ onNavigate }) => {
           setRecording(recording);
           console.log('Recording started');
         } catch (err) {
-            Speech.speak("Failed to start recording");
+            Speech.speak("Failed to start recording", {language: "en-US"});
             console.error('Failed to start recording', err);
         }
       }
@@ -144,7 +144,7 @@ const CameraComponent = ({ onNavigate }) => {
           const responseData = await response.json();
           voiceCmd(responseData.text);
         } else {
-            Speech.speak("Failed to upload audio");
+            Speech.speak("Failed to upload audio", {language: "en-US"});
           console.error('Failed to upload audio');
           console.log(response.json());
         }
@@ -160,7 +160,7 @@ const CameraComponent = ({ onNavigate }) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         const lastSpoken = await AsyncStorage.getItem("lastSpoken");
         setSpeaking(true);
-        Speech.speak(lastSpoken, { onDone: () => setSpeaking(false) });
+        Speech.speak(lastSpoken, { onDone: () => setSpeaking(false), language: "en-US"});
       };
 
       const stopSpeech = async () => {
@@ -253,10 +253,10 @@ const CameraComponent = ({ onNavigate }) => {
                           
                         speak();              
                     } else {
-                        Speech.speak("Unable to upload the image");
+                        Speech.speak("Unable to upload the image", {language: "en-US"});
                     }              
             } catch (error) {
-                Speech.speak("Failed to upload the image");
+                Speech.speak("Failed to upload the image", {language: "en-US"});
                 console.error('Error uploading image', error);
                 
             }   
