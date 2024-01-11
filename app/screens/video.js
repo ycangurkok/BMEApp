@@ -235,7 +235,11 @@ const VideoComponent = ({ onNavigate }) => {
                     });
                 
                     let endpointName = "summarizeVideo"
-     
+                    
+                    const hapticFeedbackInterval = setInterval(() => {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                    }, 1500);
+
                     const response = await fetch('https://bemyeyesdeploy.azurewebsites.net/api/ImageAnalysis/'+ endpointName, {
                         method: 'POST',
                         headers: {
@@ -243,7 +247,7 @@ const VideoComponent = ({ onNavigate }) => {
                         },
                         body: formData,
                     });
-            
+                    clearInterval(hapticFeedbackInterval);
                     if (response.ok) {
                         console.log('Video uploaded successfully');
                         let responseData = await response.json();           
