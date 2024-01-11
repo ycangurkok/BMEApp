@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -15,11 +15,13 @@ import HomeLogo from '../images/home.png';
 import ReplayLogo from '../images/replay.png';
 import SettingsLogo from '../images/settings.png';
 import VoiceLogo from "../images/microphone.png";
+import StopVoice from "../images/stop-speech.png";
 import * as Haptics from 'expo-haptics';
 
 const HomePage = ({ onNavigate }) => {
   const navigation = useNavigation();
   const [recording, setRecording] = React.useState();
+  const [speaking, setSpeaking] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -146,7 +148,14 @@ const HomePage = ({ onNavigate }) => {
   const replaySound = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     const lastSpoken = await AsyncStorage.getItem("lastSpoken");
-    Speech.speak(lastSpoken);
+    setSpeaking(true);
+    Speech.speak(lastSpoken, { onDone: () => setSpeaking(false) });
+  };
+
+  const stopSpeech = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    Speech.stop();
+    setSpeaking(false);
   };
 
   const openSettings = () => {
@@ -227,10 +236,10 @@ const HomePage = ({ onNavigate }) => {
 
         <TouchableOpacity 
           style={styles.footerButton} 
-          onPress={replaySound}
+          onPress={speaking ? stopSpeech : replaySound}
         >
-          <Image source={ReplayLogo} style={styles.homeImageLogo} />
-          <Text style={styles.footerButtonText}>Replay</Text>
+          <Image style={styles.homeImageLogo} source={speaking ? StopVoice : ReplayLogo} />
+          <Text style={styles.footerButtonText}>{speaking ? "Stop" : "Replay"}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
