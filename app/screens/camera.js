@@ -223,7 +223,11 @@ const CameraComponent = ({ onNavigate }) => {
                 console.log(endpointName)
 
                 console.log('FormData:', formData);
- 
+                
+                const hapticFeedbackInterval = setInterval(() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              }, 1500);
+
                     const response = await fetch('https://bemyeyesdeploy.azurewebsites.net/api/ImageAnalysis/'+ endpointName, {
                         method: 'POST',
                         headers: {
@@ -233,7 +237,7 @@ const CameraComponent = ({ onNavigate }) => {
                         body: formData,
                     });
                     
-        
+                    clearInterval(hapticFeedbackInterval);
                     if (response.ok) {
                         console.log('Image uploaded successfully');
                         let responseData = await response.json();
