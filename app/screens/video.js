@@ -299,7 +299,8 @@ const VideoComponent = ({ onNavigate }) => {
                     uri: video.uri,
                     }}
                     resizeMode={ResizeMode.STRETCH}
-                    isLooping
+                    isLooping={true}
+                    shouldPlay={true}
                 />
             )}
             <View style={styles.lineContainer}>
@@ -309,6 +310,8 @@ const VideoComponent = ({ onNavigate }) => {
                     <TouchableOpacity 
                         style={styles.footerButton} 
                         onPress={() => setVideo(null)}
+                        accessible={true}
+                        accessibilityLabel='Retake Video'
                     >
                         <Image source={RetakeLogo} style={styles.takePicImageLogo} />     
                     </TouchableOpacity>
@@ -316,6 +319,8 @@ const VideoComponent = ({ onNavigate }) => {
                     <TouchableOpacity 
                         style={styles.footerButton} 
                         onPress={saveVideo}
+                        accessible={true}
+                        accessibilityLabel='Save Video'
                     >
                         <Image source={SaveLogo} style={styles.takePicImageLogo} />     
                     </TouchableOpacity>
@@ -330,23 +335,31 @@ const VideoComponent = ({ onNavigate }) => {
                                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                                 setType(type === CameraType.back ? CameraType.front : CameraType.back);
                             }}
+                            accessible={true}
+                            accessibilityLabel='Turn Camera'
                         >
                         <Image source={TurnCameraLogo} style={styles.homeImageLogo} />
                     </TouchableOpacity>
 
                     <TouchableOpacity 
                         style={styles.footerButton} 
-                        onPress={toggleVideoRecording}>
+                        onPress={toggleVideoRecording}
+                        accessible={true}
+                        accessibilityLabel='Record Video'
+                        >
                         {isRecording ? (
                             <Image source={EllipseStop} style={styles.takePicImageLogo} /> 
                         ) : (
                             <Image source={EllipseStart} style={styles.takePicImageLogo} /> 
-                        )}   
+                        )}
+                           
                     </TouchableOpacity>
 
                     <TouchableOpacity 
                             style={styles.footerButton} 
                             onPress={toggleFlash}
+                            accessible={true}
+                            accessibilityLabel='Toggle Flash'
                         >
                         <Image                                 
                             source={flashMode === Camera.Constants.FlashMode.torch ? FlashOnLogo : FlashOffLogo} 
