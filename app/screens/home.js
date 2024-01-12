@@ -49,8 +49,14 @@ const HomePage = ({ onNavigate }) => {
     else if(text.includes("where")) {
       navigation.navigate('WhereAmI');
     }
+    else if(text.includes("record") || text.includes("video") || text.includes("capture"))  {
+      navigation.navigate('Video');
+    }
+    else if(text.includes("smart") || text.includes("hat"))  {
+      navigation.navigate('StreamScreen');
+    }
     else if(text.includes("help")) {
-      Speech.speak("You can say: describe, count money, read text, and where am i", {language: "en-US"});
+      Speech.speak("You can say: describe, count money, read text, where am i, video capture, and smart hat", {language: "en-US"});
     }
     else {
       Speech.speak("Sorry, I didn't get that. To see available commands, please say help", {language: "en-US"});
