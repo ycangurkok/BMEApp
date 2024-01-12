@@ -1,15 +1,23 @@
 import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
-import { View, Image, StyleSheet, Button, Text, TouchableOpacity } from 'react-native';
+import { View, Image, StyleSheet, Button, Text, TouchableOpacity, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import base64 from 'react-native-base64';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Speech from 'expo-speech';
+import * as Haptics from 'expo-haptics';
+import HomeLogo from '../images/home.png';
+import ReplayLogo from '../images/replay.png';
+import VoiceLogo from "../images/microphone.png";
+import StopVoice from "../images/stop-speech.png";
+import { Audio } from 'expo-av';
 
 function StreamScreen() {
   const [streamData, setStreamData] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const navigation = useNavigation();
   const wsRef = useRef(null); // Use useRef for the WebSocket instance
+  const [recording, setRecording] = useState();
+  const [speaking, setSpeaking] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -19,6 +27,105 @@ function StreamScreen() {
       headerTintColor: '#fff', 
     });
   }, [navigation]);
+
+  function voiceCmd(text) {
+    text = text.replace(/\W/g, '');
+    text = text.toLowerCase();
+    console.log(text);
+
+    if(text.includes("Describe") || text.includes("Image")) {
+      handleButtonPress1();
+    }
+    else if(text.includes("Read") || text.includes("Text")) {
+      handleButtonPress2();
+    }
+    else if(text.includes("help")) {
+      Speech.speak("You can say: describe image, and read text", {language: "en-US"});
+    }
+    else {
+      Speech.speak("Sorry, I didn't get that. To see available commands, please say help", {language: "en-US"});
+    }
+  }
+
+async function startRecording() {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      console.log('Requesting permissions..');
+      await Audio.requestPermissionsAsync();
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+
+      console.log('Starting recording..');
+      const { recording } = await Audio.Recording.createAsync( Audio.RecordingOptionsPresets.HIGH_QUALITY
+      );
+      setRecording(recording);
+      console.log('Recording started');
+    } catch (err) {
+        Speech.speak("Failed to start recording", {language: "en-US"});
+        console.error('Failed to start recording', err);
+    }
+  }
+
+  async function stopRecording() {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    console.log('Stopping recording..');
+    setRecording(undefined);
+    await recording.stopAndUnloadAsync();
+    await Audio.setAudioModeAsync(
+      {
+        allowsRecordingIOS: false,
+      }
+    );
+    const uri = recording.getURI();
+    console.log('Recording stopped and stored at', uri);
+    const fileName = uri.match(/[^\/]+$/)[0];
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", "Bearer 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");
+    myHeaders.append("Content-Type", "multipart/form-data");
+    const formData = new FormData();
+    formData.append("file", {
+      uri: uri,
+      type: 'audio/mp4',
+      name: fileName,
+    });
+    formData.append("model", "whisper-1");
+    const endPointAddr = "https://api.openai.com/v1/audio/transcriptions";
+    const response = await fetch(endPointAddr, {
+      method: 'POST',
+      headers: myHeaders,
+      body: formData,
+    });
+    if (response.ok) {
+      console.log('Audio uploaded successfully');
+      const responseData = await response.json();
+      voiceCmd(responseData.text);
+    } else {
+        Speech.speak("Failed to upload audio", {language: "en-US"});
+      console.error('Failed to upload audio');
+      console.log(response.json());
+    }
+    
+  }
+
+const openHome = () => {
+Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+navigation.navigate('Home');
+};
+
+const replaySound = async () => {
+Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+const lastSpoken = await AsyncStorage.getItem("lastSpoken");
+setSpeaking(true);
+Speech.speak(lastSpoken, { onDone: () => setSpeaking(false) , language: "en-US"});
+};
+
+const stopSpeech = async () => {
+Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+Speech.stop();
+setSpeaking(false);
+};
   
   const startStream = async () => {
     try {
@@ -203,9 +310,40 @@ function StreamScreen() {
           <Text style={styles.buttonText}>Read Text</Text>
         </TouchableOpacity>
       </View>
+      <View style={styles.footer}>
+
+                <TouchableOpacity 
+                
+                style={styles.footerButton} 
+                onPress={openHome}
+                >
+                <Image source={HomeLogo} style={styles.homeImageLogo} />
+                <Text style={styles.footerButtonText}>Home</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                    style={styles.footerButton} 
+                    onPress={recording ? stopRecording : startRecording}
+                    >
+                    <Image source={VoiceLogo} style={styles.homeImageLogo} />
+                    <Text style={styles.footerButtonText}>{recording ? "Stop" : "Voice"}</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                style={styles.footerButton} 
+                onPress={speaking ? stopSpeech : replaySound}
+                >
+                <Image style={styles.homeImageLogo} source={speaking ? StopVoice : ReplayLogo} />
+                <Text style={styles.footerButtonText}>{speaking ? "Stop" : "Replay"}</Text>
+                </TouchableOpacity>
+      </View>
     </View>
   );
 }
+
+const { width, height } = Dimensions.get('window');
+const imageWidthRatio = 0.25; 
+const imageHeightRatio = 0.1;
 
 const styles = StyleSheet.create({
   container: {
@@ -215,7 +353,9 @@ const styles = StyleSheet.create({
   streamContainer: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'white',
   },
   buttonContainer: {
     flex: 1,
@@ -253,7 +393,55 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 24,
     color: 'white',
-  }
+  },
+  footerButton: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: '#000',
+    marginHorizontal: 5,
+    borderWidth: 1,
+    borderColor: 'black',
+  },
+  footerButtonText: {
+    color: 'white',
+    fontSize: height < 600 ? 14 : 16, // Küçük ekranlar için daha küçük font boyutu
+    textAlign: 'center',
+    alignSelf: 'center',
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    flexDirection: 'row',
+    width: '100%',
+    height: height * 0.1, // Ekran yüksekliğinin %10'u
+    backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  homeImageLogo: {
+    width: width * 0.1,
+    height: height * 0.05,
+    alignSelf: 'center',
+    paddingHorizontal: width * 0.05, // Ekran genişliğinin %5'i
+
+  },
+  takePicImageLogo: {
+    width: width * imageWidthRatio,
+    height: height * imageHeightRatio,
+    marginBottom: height * 0.005,
+    alignSelf: 'center',
+  },
+  lineStyle: {
+    height: 1, // Çizginin kalınlığı
+    backgroundColor: 'white', // Çizginin rengi
+    width: '100%', // Genişlik, ekranın %100'ünü kaplasın
+    alignSelf: 'center', // Çizgiyi ekranda ortala
+    marginBottom: height * 0.1,
+  },
+  lineContainer: {
+    backgroundColor: 'black', // Arka plan rengini siyah yap
+    width: '100%', // Genişlik, ekranın %100'ünü kaplasın
+  },
 });
 
 
